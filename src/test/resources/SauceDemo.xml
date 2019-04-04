@@ -1,0 +1,13 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+<suite name="SauceDemo" parallel="methods" >
+    <test name="Sauce Demo SoFi test assignment" preserve-order="true" parallel="methods" thread-count="10"  >
+        <groups>
+            <define name="SauceDemo">
+                <include name="SD"/>
+            </define>
+        </groups>
+        <classes>
+            <class name="com.saucedemo.test.LoginAndAddToCartTest" />
+        </classes>
+    </test>
+</suite>
