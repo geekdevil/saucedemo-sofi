@@ -9,14 +9,11 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.logging.Logger;
-
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.testng.Assert;
+import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
-import org.testng.asserts.SoftAssert;
-
 import com.saucedemo.pages.LoginPage;
 
 /**
@@ -28,11 +25,62 @@ public class LoginAndAddToCartTest {
 	String url = "";
 	String username = "";
 	String password = "";
+
+	WebDriver driver;
+	
 	@Test(groups = {"SD"}, description = "Sauce Demo test case")
 	public void verifyAddToCart() {
+		
+		
+		driver = new ChromeDriver();
+		driver.get(url);
+		System.out.println("browsing to: "+url);
+		LoginPage login = new LoginPage(driver);
+		login.typeUserName(username);
+		login.typePassword(password);
+		login.clickSubmit();
+		login.addOnesieToCart();
+		login.addBikeLightToCart();
+		login.goToCart();
+		ArrayList<String> itemsInCart = new ArrayList<String>();
+		itemsInCart = login.getCartItems();
+		
+		Assert.assertEquals(itemsInCart.get(0).toString(), "Sauce Labs Onesie", "Sauce Labs Onesei Found");
+		Assert.assertEquals(itemsInCart.get(1).toString(), "Sauce Labs Bike Light", "Sauce Labs Onesei Found");
+		
+		driver.close();
+	}	
+	
+	@Test(groups = {"SD"}, description = "Sauce Demo test case to fail")
+	public void verifyAddToCartFail() {
 		if (System.getProperty("webdriver.chrome.driver") == null) {
 			System.setProperty("webdriver.chrome.driver", "src/test/resources/chromedriver");
 		}
+		
+		WebDriver driver = new ChromeDriver();
+		driver.get(url);
+		System.out.println("browsing to: "+url);
+		LoginPage login = new LoginPage(driver);
+		login.typeUserName(username);
+		login.typePassword(password);
+		login.clickSubmit();
+		login.addOnesieToCart();
+		login.addBikeLightToCart();
+		login.goToCart();
+		ArrayList<String> itemsInCart = new ArrayList<String>();
+		itemsInCart = login.getCartItems();
+		
+		Assert.assertEquals(itemsInCart.get(0).toString(), "Sauce Labs Onesie", "Sauce Labs Onesei Found");
+		
+		//Assertion set to fail
+		driver.close();
+		Assert.assertEquals(itemsInCart.get(1).toString(), "Sauce Labs Onesie", "Sauce Labs Onesei Found");
+		
+		
+	}	
+	
+	@BeforeSuite
+	public void setup() {
 		File conf = new File("src/test/resources/configuration.properties");
 		FileReader fileReader = null;
 		try {
@@ -57,23 +105,9 @@ public class LoginAndAddToCartTest {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		WebDriver driver = new ChromeDriver();
-		driver.get(url);
-		System.out.println("browsing to: "+url);
-		LoginPage login = new LoginPage(driver);
-		login.typeUserName(username);
-		login.typePassword(password);
-		login.clickSubmit();
-		login.addOnesieToCart();
-		login.addBikeLightToCart();
-		login.goToCart();
-		ArrayList<String> itemsInCart = new ArrayList<String>();
-		itemsInCart = login.getCartItems();
-		
-		Assert.assertEquals(itemsInCart.get(0).toString(), "Sauce Labs Onesie", "Sauce Labs Onesei Found");
-		Assert.assertEquals(itemsInCart.get(1).toString(), "Sauce Labs Bike Light", "Sauce Labs Onesei Found");
-		
-		driver.close();
-	}	
-	
+		//Set chromedriver path
+		if (System.getProperty("webdriver.chrome.driver") == null) {
+			System.setProperty("webdriver.chrome.driver", "src/test/resources/chromedriver");
+		}
+	}
 }
